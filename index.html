@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Windows 11 Web Edition</title>
+
+<style>
+/* GLOBAL */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  background: url('https://wallpapercave.com/wp/wp9414174.jpg') center/cover;
+}
+
+/* LOGIN */
+#login {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+#login button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.3);
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  transition: .2s;
+}
+#login button:hover {
+  background: rgba(255,255,255,0.5);
+}
+
+/* DESKTOP */
+#desktop {
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+
+.desktop {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.icon-desktop {
+  width: 80px;
+  color: white;
+  text-align: center;
+  margin-bottom: 25px;
+  cursor: pointer;
+  user-select: none;
+  transition: .2s;
+}
+.icon-desktop:hover {
+  transform: scale(1.1);
+}
+
+/* TASKBAR */
+.taskbar {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.taskbar-center {
+  display: flex;
+  gap: 10px;
+}
+
+.task-item {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: .2s;
+}
+.task-item.active {
+  background: rgba(255,255,255,0.3);
+}
+.task-item:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.system-tray {
+  position: absolute;
+  right: 20px;
+  color: white;
+  font-size: 18px;
+}
+
+/* START MENU */
+.start-menu {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  opacity: 0;
+  width: 520px;
+  height: 560px;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(30px);
+  border-radius: 20px;
+  padding: 20px;
+  transition: .25s;
+}
+.start-menu.active {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 12px;
+}
+
+.app {
+  background: rgba(255,255,255,.5);
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: .2s;
+}
+.app:hover {
+  background: rgba(255,255,255,.7);
+}
+
+/* WINDOWS */
+.window {
+  position: absolute;
+  width: 750px;
+  height: 500px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 10px 50px rgba(0,0,0,.4);
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn .2s ease-out;
+}
+@keyframes fadeIn {
+  from {opacity: 0; transform: scale(0.95);}
+  to {opacity: 1; transform: scale(1);}
+}
+
+.window-header {
+  height: 38px;
+  background: #e5e5e5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  cursor: move;
+  border-radius: 14px 14px 0 0;
+}
+
+.window-header span {
+  margin-left: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.window-body {
+  flex: 1;
+  overflow: auto;
+  padding: 10px;
+}
+
+/* CMD */
+.cmd {
+  background: black;
+  color: #0f0;
+  font-family: monospace;
+  height: 100%;
+  padding: 5px;
+  overflow: auto;
+}
+.cmd input {
+  background: black;
+  color: #0f0;
+  border: none;
+  outline: none;
+  width: 90%;
+}
+
+/* VM */
+.vm-screen {
+  background: black;
+  color: #0f0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-size: 20px;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <h1>Windows 11 Web Edition</h1>
+  <button onclick="loginUser()">Zaloguj</button>
+</div>
+
+<!-- DESKTOP -->
+<div id="desktop">
+
+<div class="desktop">
+ <div class="icon-desktop" onclick="openApp('Explorer')">💻<br>Komputer</div>
+ <div class="icon-desktop" onclick="openApp('Google')">🌐<br>Internet</div>
+ <div class="icon-desktop" onclick="openApp('VM')">🖥️<br>VirtualBox</div>
+ <div class="icon-desktop" onclick="openApp('CMD')">>_<br>CMD</div>
+ <div class="icon-desktop" onclick="openApp('Store')">🛒<br>Microsoft Store</div>
+</div>
+
+<!-- START MENU -->
+<div class="start-menu" id="startMenu">
+ <div class="apps-grid">
+  <div class="app" onclick="openApp('Explorer')">Explorer</div>
+  <div class="app" onclick="openApp('Google')">Internet</div>
+  <div class="app" onclick="openApp('Notatnik')">Notatnik</div>
+  <div class="app" onclick="openApp('VM')">VirtualBox</div>
+  <div class="app" onclick="openApp('CMD')">CMD</div>
+  <div class="app" onclick="openApp('GOD')">GOD MODE</div>
+  <div class="app" onclick="openApp('Store')">Microsoft Store</div>
+ </div>
+</div>
+
+<!-- TASKBAR -->
+<div class="taskbar">
+ <div class="taskbar-center">
+  <div class="task-item" onclick="toggleStart()">⊞</div>
+  <div id="taskbar"></div>
+ </div>
+ <div class="system-tray" id="clock"></div>
+</div>
+
+</div>
+
+<script>
+let z = 1;
+
+/* LOGIN */
+function loginUser() {
+  login.style.display = "none";
+  desktop.style.display = "block";
+}
+
+/* CREATE WINDOW */
+function createWindow(title, html) {
+  const win = document.createElement("div");
+  win.className = "window";
+  win.style.top = "120px";
+  win.style.left = "120px";
+  win.style.zIndex = ++z;
+
+  win.innerHTML = `
+    <div class="window-header" onmousedown="dragStart(event,this.parentElement)">
+      ${title}
+      <div>
+        <span onclick="minimize(this)">—</span>
+        <span onclick="closeWin(this)">✖</span>
+      </div>
+    </div>
+    <div class="window-body">${html}</div>
+  `;
+
+  document.body.appendChild(win);
+  addTask(win, title);
+}
+
+/* TASKBAR */
+function addTask(win, title) {
+  const bar = document.getElementById("taskbar");
+  const item = document.createElement("div");
+  item.className = "task-item active";
+  item.innerText = title[0];
+  item.onclick = () => toggleWin(win, item);
+  bar.appendChild(item);
+  win.task = item;
+}
+
+function toggleWin(win, item) {
+  if (win.style.display === "none") {
+    win.style.display = "flex";
+    item.classList.add("active");
+  } else {
+    win.style.display = "none";
+    item.classList.remove("active");
+  }
+}
+
+function closeWin(el) {
+  const win = el.closest(".window");
+  win.task.remove();
+  win.remove();
+}
+
+function minimize(el) {
+  const win = el.closest(".window");
+  win.style.display = "none";
+  win.task.classList.remove("active");
+}
+
+/* APPS */
+function openApp(name) {
+  if (name === "Explorer")
+    createWindow("Explorer", "📂 Fake pliki");
+
+  if (name === "Notatnik")
+    createWindow("Notatnik", '<textarea style="width:100%;height:100%"></textarea>');
+
+  if (name === "Google")
+    createWindow("Internet", '<iframe src="https://example.com" style="width:100%;height:100%;border:none"></iframe>');
+
+  if (name === "VM")
+    createWindow(
+      "VirtualBox",
+      `
+      <div class="vm-screen">
+        <div>
+          <p>Booting Virtual Machine...</p>
+          <p>Loading system files...</p>
+          <p style="color:lime">✔ System loaded</p>
+          <p style="color:lime">✔ Fake OS ready</p>
+        </div>
+      </div>
+      `
+    );
+
+  if (name === "CMD")
+    createCMD();
+
+  if (name === "GOD")
+    createWindow("GOD MODE", "<h2>GOD MODE</h2><p>All features unlocked!</p>");
+
+  if (name === "Store")
+    createWindow("Microsoft Store", "<h2>Fake Store</h2><p>Apps coming soon...</p>");
+}
+
+/* CMD */
+function createCMD() {
+  const html = `<div class='cmd' id='cmdBox'>C:\\Users&gt; <input id='cmdInput'></div>`;
+  createWindow("CMD", html);
+
+  setTimeout(() => {
+    const input = document.getElementById("cmdInput");
+    const box = document.getElementById("cmdBox");
+
+    function newPrompt() {
+      box.innerHTML += "<br>C:\\Users&gt; ";
+      box.appendChild(input);
+      input.focus();
+    }
+
+    input.focus();
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        const val = input.value.trim();
+        box.innerHTML += val;
+
+        if (val === "help")
+          box.innerHTML += "<br>help, dir, cls";
+
+        else if (val === "dir")
+          box.innerHTML += "<br>plik1.txt<br>folder/";
+
+        else if (val === "cls") {
+          box.innerHTML = "C:\\Users&gt; ";
+          input.value = "";
+          box.appendChild(input);
+          return;
+        }
+
+        else
+          box.innerHTML += "<br>Nieznana komenda";
+
+        input.value = "";
+        newPrompt();
+      }
+    });
+  }, 50);
+}
+
+/* START MENU */
+function toggleStart() {
+  document.getElementById("startMenu").classList.toggle("active");
+}
+
+/* DRAG WINDOWS */
+function dragStart(e, win) {
+  let ox = e.clientX - win.offsetLeft;
+  let oy = e.clientY - win.offsetTop;
+  win.style.zIndex = ++z;
+
+  document.onmousemove = (e) => {
+    win.style.left = e.clientX - ox + "px";
+    win.style.top = e.clientY - oy + "px";
+  };
+  document.onmouseup = () => (document.onmousemove = null);
+}
+
+/* CLOCK */
+function updateClock() {
+  document.getElementById("clock").innerText =
+    new Date().toLocaleTimeString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+</script>
+
+</body>
+</html>
+
